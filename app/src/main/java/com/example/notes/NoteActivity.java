@@ -1,5 +1,6 @@
 package com.example.notes;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -13,11 +14,16 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
+
+    public static final  String NOTE_INFO = "com.example.notes.NOTE_INFO";
+    private NoteInfo mNote;
+    private boolean mIsNewNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +32,10 @@ public class NoteActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Create Spinner and Edit Text Fields
         Spinner spinnerCourses = findViewById(R.id.spinner);
+        EditText titleTextField = findViewById(R.id.text_note_title);
+        EditText noteTextField = findViewById(R.id.text_note_text);
 
         //Get List of Courses from Data Manager
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
@@ -37,6 +46,34 @@ public class NoteActivity extends AppCompatActivity {
 
         //Set Adapter for Spinner
         spinnerCourses.setAdapter(adapterCourses);
+
+        //Get Intent Extra into Field
+        readStartingIntentExtras();
+
+        //Place Extra into Fields
+        if(!mIsNewNote) {
+            displayNote(spinnerCourses, titleTextField, noteTextField);
+        }
+
+    }
+
+    private void displayNote(Spinner spinnerCourses, EditText titleTextField, EditText noteTextField) {
+        //Set Spinner Content
+        List<CourseInfo> courses = DataManager.getInstance().getCourses();
+        int courseIndex = courses.indexOf(mNote.getCourse());
+        spinnerCourses.setSelection(courseIndex);
+
+        //Set Text Field Content
+        titleTextField.setText(mNote.getTitle());
+        noteTextField.setText(mNote.getText());
+    }
+
+    private void readStartingIntentExtras() {
+        Intent intent = getIntent();
+        mNote = intent.getParcelableExtra(NOTE_INFO);
+
+        //Check if No Extra
+        mIsNewNote = mNote == null;
     }
 
     @Override

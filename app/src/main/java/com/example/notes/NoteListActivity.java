@@ -29,25 +29,36 @@ public class NoteListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startActivity(new Intent(NoteListActivity.this, NoteActivity.class));
             }
         });
 
+        //Method to show List View
         initializeDisplayContent();
     }
 
     private void initializeDisplayContent() {
-        ListView notesList = findViewById(R.id.list_notes);
+        //Create List View
+        final ListView notesList = findViewById(R.id.list_notes);
+
+        //Get Notes list from DataManager
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
+
+        //Setup Array Adapter for List View using notes
         ArrayAdapter<NoteInfo> notesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,notes);
         notesList.setAdapter(notesAdapter);
 
+        //Create Onclick listener for List View Item
         notesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long l) {
+
+                //Create Intent for each click
                 Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
+                NoteInfo note = (NoteInfo) notesList.getItemAtPosition(itemPosition);
+                intent.putExtra(NoteActivity.NOTE_INFO, note);
                 startActivity(intent);
+
             }
         });
     }
